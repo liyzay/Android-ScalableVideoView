@@ -16,13 +16,26 @@
         android:layout_marginBottom="100dp"
         app:scalableType="fitCenter"/>
 
-    <Button
-        android:id="@+id/btn_next"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:orientation="horizontal"
         android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="16dp"
-        android:text="@string/btn_next_to_list"/>
+        android:gravity="center">
+
+        <Button
+            android:id="@+id/btn_next"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:text="@string/btn_next_to_list"/>
+        <Button
+            android:id="@+id/btn_next_anim"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:text="@string/btn_next_anim"/>
+
+    </LinearLayout>
 
 </RelativeLayout>

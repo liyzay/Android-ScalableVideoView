@@ -33,6 +33,7 @@
     <string name="scale_end_inside">EndInside</string>
 
     <string name="btn_next_to_list">View video as list</string>
+    <string name="btn_next_anim">Video with animation</string>
 
     <string name="sample_landscape">Landscape Video</string>
     <string name="sample_portrait">Portrait Video</string>

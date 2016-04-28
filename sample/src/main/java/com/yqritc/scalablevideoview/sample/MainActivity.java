@@ -1,43 +1,37 @@
 package com.yqritc.scalablevideoview.sample;
 
-import com.yqritc.scalablevideoview.ScalableType;
-import com.yqritc.scalablevideoview.ScalableVideoView;
-
-import android.media.MediaPlayer;
+import android.content.Context;
+import android.media.AudioManager;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
-import java.io.IOException;
+import com.yqritc.scalablevideoview.ScalableType;
+import com.yqritc.scalablevideoview.ScalableVideoView;
 
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     private ScalableVideoView mVideoView;
+	//Mute Audio
+	private AudioManager mAudioManager ;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+	    mAudioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+
         mVideoView = (ScalableVideoView) findViewById(R.id.video_view);
         findViewById(R.id.btn_next).setOnClickListener(this);
+        findViewById(R.id.btn_next_anim).setOnClickListener(this);
 
-        try {
-            mVideoView.setRawData(R.raw.landscape_sample);
-            mVideoView.setVolume(0, 0);
-            mVideoView.setLooping(true);
-            mVideoView.prepare(new MediaPlayer.OnPreparedListener() {
-                @Override
-                public void onPrepared(MediaPlayer mp) {
-                    mVideoView.start();
-                }
-            });
-        } catch (IOException ioe) {
-            //ignore
-        }
+	    mVideoView.setRawData(R.raw.landscape_sample);
+	    mVideoView.setLooping(true);
+	    mVideoView.start();
     }
 
     @Override
@@ -46,7 +40,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         return true;
     }
 
-    @Override
+	@Override
+	protected void onStop() {
+		super.onStop();
+		mAudioManager.setStreamMute(AudioManager.STREAM_MUSIC,false);
+	}
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+		mAudioManager.setStreamMute(AudioManager.STREAM_MUSIC,true);
+	}
+
+	@Override
     public boolean onOptionsItemSelected(MenuItem item) {
         ScalableType scalableType;
         switch (item.getItemId()) {
@@ -149,6 +155,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.btn_next:
                 SampleActivity.startActivity(this);
                 break;
+	        case R.id.btn_next_anim:
+		        VideoAnimActivity.callMe(this);
+		        break;
             default:
                 break;
         }

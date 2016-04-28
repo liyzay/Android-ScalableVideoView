@@ -1,10 +1,7 @@
 package com.yqritc.scalablevideoview.sample;
 
-import com.yqritc.scalablevideoview.ScalableType;
-import com.yqritc.scalablevideoview.ScalableVideoView;
-
 import android.content.Context;
-import android.media.MediaPlayer;
+import android.media.AudioManager;
 import android.support.annotation.RawRes;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -12,7 +9,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import java.io.IOException;
+import com.yqritc.scalablevideoview.ScalableType;
+import com.yqritc.scalablevideoview.ScalableVideoView;
 
 /**
  * Created by yqritc on 2015/06/14.
@@ -52,19 +50,9 @@ public class SampleAdapter extends RecyclerView.Adapter<SampleAdapter.ViewHolder
     }
 
     private void setVideo(final ScalableVideoView videoView) {
-        try {
-            videoView.setRawData(mVideoResId);
-            videoView.setVolume(0, 0);
-            videoView.setLooping(true);
-            videoView.prepare(new MediaPlayer.OnPreparedListener() {
-                @Override
-                public void onPrepared(MediaPlayer mp) {
-                    videoView.start();
-                }
-            });
-        } catch (IOException ioe) {
-            //ignore
-        }
+	    videoView.setRawData(mVideoResId);
+	    videoView.setLooping(true);
+	    videoView.start();
     }
 
     @Override

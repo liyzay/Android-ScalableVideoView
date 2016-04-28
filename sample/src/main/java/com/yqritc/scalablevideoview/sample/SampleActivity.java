@@ -2,6 +2,7 @@ package com.yqritc.scalablevideoview.sample;
 
 import android.content.Context;
 import android.content.Intent;
+import android.media.AudioManager;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -16,6 +17,8 @@ public class SampleActivity extends AppCompatActivity {
 
     private RecyclerView mRecyclerView;
     private SampleAdapter mSampleAdapter;
+	//Mute Audio
+	private AudioManager mAudioManager ;
 
     public static void startActivity(Context context) {
         Intent intent = new Intent(context, SampleActivity.class);
@@ -26,6 +29,8 @@ public class SampleActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sample);
+
+	    mAudioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
 
         mRecyclerView = (RecyclerView) findViewById(R.id.recyclerview);
         mSampleAdapter = new SampleAdapter(this);
@@ -38,6 +43,19 @@ public class SampleActivity extends AppCompatActivity {
         getMenuInflater().inflate(R.menu.menu_sample, menu);
         return true;
     }
+
+
+	@Override
+	protected void onStop() {
+		super.onStop();
+		mAudioManager.setStreamMute(AudioManager.STREAM_MUSIC,false);
+	}
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+		mAudioManager.setStreamMute(AudioManager.STREAM_MUSIC,true);
+	}
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
