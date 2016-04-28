@@ -1,67 +1,8 @@
 # Android-ScalableVideoView
-[![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-ScalableVideoView-green.svg?style=flat)](https://android-arsenal.com/details/1/2045)
-[![License](https://img.shields.io/badge/license-Apache%202-blue.svg)](https://www.apache.org/licenses/LICENSE-2.0)
-[![Download](https://api.bintray.com/packages/yqritc/maven/android-scalablevideoview/images/download.svg)](https://bintray.com/yqritc/maven/android-scalablevideoview/_latestVersion)
-
-*__Looking for the extra scale types of ImageView? [Check out ScalableImageView.](https://github.com/yqritc/Android-ScalableImageView)__*  
 
 Android Texture VideoView having a variety of scale types like the scale types of ImageView.
 
-![Sample](/sample/sample.gif)
-
-# Sample
-<a href="https://play.google.com/store/apps/details?id=com.yqritc.scalablevideoview.sample"><img src="http://developer.android.com/images/brand/en_app_rgb_wo_60.png"/></a>
-
-# Release Note
-
-[Release Note] (https://github.com/yqritc/Android-ScalableVideoView/releases)
-
-# Gradle
-```
-repositories {
-    jcenter()
-}
-
-dependencies {
-    compile 'com.yqritc:android-scalablevideoview:1.0.3'
-}
-```
-
-# Support Scale Types  
-
-### Scale to fit 
-- fitXY
-- fitStart
-- fitCenter
-- fitEnd
-
-### No Scale
-- leftTop
-- leftCenter
-- leftBottom
-- centerTop
-- center
-- centerBottom
-- rightTop
-- rightCenter
-- rightBottom
-
-### Crop
-- leftTopCrop
-- leftCenterCrop
-- leftBottomCrop
-- centerTopCrop
-- centerCrop
-- centerBottomCrop
-- rightTopCrop
-- rightCenterCrop
-- rightBottomCrop
-
-### Scale Inside
-- startInside
-- centerInside
-- endInside
-
+![Sample](/art/device.gif)
 
 # Usage
 
@@ -71,41 +12,126 @@ dependencies {
   android:id="@+id/video_view"
   android:layout_width="match_parent"
   android:layout_height="match_parent"
-  android:layout_marginBottom="100dp"
-  app:scalableType="fitCenter"/>
+  app:scalableType="centerCrop"/>
 ```
 Please refere the following xml for the list of scalableType you can set.  
 [attrs.xml](https://github.com/yqritc/Android-ScalableVideoView/blob/master/library/src/main/res/values/attrs.xml)
 
 ### Sample usage in source code
 ```
-@Override
-protected void onCreate(Bundle savedInstanceState) {
-  super.onCreate(savedInstanceState);
-  setContentView(R.layout.activity_main);
-  
-  mVideoView = (ScalableVideoView) findViewById(R.id.video_view);
-  try {
-    mVideoView.setRawData(R.raw.landscape_sample);
-  } catch (IOException ioe) {
-    //handle error
-  }
-}
+	@Override
+	protected void onCreate(@Nullable Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		
+		setContentView(R.layout.activity_video_anim);
 
-@Override
-public void onClick(View v) {
-  switch (v.getId()) {
-    case R.id.btn_start:
-        mVideoView.start();
-        break;
-    case R.id.btn_update_scale:
-        mVideoView.setScalableType(ScalableType.CENTER_TOP_CROP);
-        mVideoView.invalidate();
-        break;
-      default:
-        break;
-  }
-}
+		MIN_HEIGHT = getResources().getDisplayMetrics().widthPixels ;
+		mProgressBar = (ProgressBar) findViewById(R.id.progress_bar);
+		mVideoView = (ScalableVideoView) findViewById(R.id.video_view);
+		mAnimView = findViewById(R.id.lay_container);
+		btn_collapse_screen = (ImageButton) findViewById(R.id.btn_collapse_screen);
+		btn_collapse_screen.setOnClickListener(this);
+		mVideoView.setOnPreparedListener(new OnPreparedListener() {
+			@Override
+			public void onPrepared(MediaPlayer mp) {
+				mProgressBar.setVisibility(View.GONE);
+			}
+		});
+		mVideoView.setVideoPath(VIDEO_URL);
+		mVideoView.start();
+		mVideoView.setMediaController(new MediaController(this));
+	}
+
+	@Override
+	public void onClick(View v) {
+		switch (v.getId()){
+			case R.id.btn_collapse_screen:
+				if(isFullScreen){
+					collapseScreen();
+				}else {
+					expandScreen();
+				}
+				break;
+		}
+	}
+
+	void expandScreen(){
+		ValueAnimator animator = ValueAnimator.ofInt(MIN_HEIGHT,FULL_HEIGHT);
+		animator.addUpdateListener(new AnimatorUpdateListener() {
+			@Override
+			public void onAnimationUpdate(ValueAnimator animation) {
+				int newHeight = (int) animation.getAnimatedValue();
+				ViewGroup.LayoutParams params = mAnimView.getLayoutParams();
+				params.height = newHeight ;
+				mAnimView.setLayoutParams(params);
+			}
+		});
+		animator.addListener(new AnimatorListener() {
+			@Override
+			public void onAnimationStart(Animator animation) {
+
+			}
+
+			@Override
+			public void onAnimationEnd(Animator animation) {
+				isFullScreen = true ;
+				btn_collapse_screen.setImageResource(R.drawable.ic_collapse_screen);
+				mVideoView.setScalableType(ScalableType.CENTER_CROP);
+			}
+
+			@Override
+			public void onAnimationCancel(Animator animation) {
+
+			}
+
+			@Override
+			public void onAnimationRepeat(Animator animation) {
+
+			}
+		});
+		animator.start();
+	}
+
+	void collapseScreen(){
+		if(FULL_HEIGHT==0){
+			FULL_HEIGHT = mAnimView.getHeight() ;
+		}
+		ValueAnimator animator = ValueAnimator.ofInt(FULL_HEIGHT,MIN_HEIGHT);
+		animator.addUpdateListener(new AnimatorUpdateListener() {
+			@Override
+			public void onAnimationUpdate(ValueAnimator animation) {
+				int newHeight = (int) animation.getAnimatedValue();
+				ViewGroup.LayoutParams params = mAnimView.getLayoutParams();
+				params.height = newHeight ;
+				mAnimView.setLayoutParams(params);
+			}
+		});
+		animator.addListener(new AnimatorListener() {
+			@Override
+			public void onAnimationStart(Animator animation) {
+
+			}
+
+			@Override
+			public void onAnimationEnd(Animator animation) {
+				isFullScreen = false ;
+				btn_collapse_screen.setImageResource(R.drawable.ic_fullscreen);
+				mVideoView.setScalableType(ScalableType.FIT_CENTER);
+			}
+
+			@Override
+			public void onAnimationCancel(Animator animation) {
+
+			}
+
+			@Override
+			public void onAnimationRepeat(Animator animation) {
+
+			}
+		});
+		animator.start();
+	}
+
 ```
 [ScalableVideoView](https://github.com/yqritc/Android-ScalableVideoView/blob/master/library/src/main/java/com/yqritc/scalablevideoview/ScalableVideoView.java) is extending TextureView to play video by using MediaPlayer.  
 Basic functionalities are defined in this class to play and scale video.  
