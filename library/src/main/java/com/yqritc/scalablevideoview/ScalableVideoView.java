@@ -12,6 +12,7 @@ import android.media.MediaPlayer.OnCompletionListener;
 import android.media.MediaPlayer.OnErrorListener;
 import android.media.MediaPlayer.OnInfoListener;
 import android.net.Uri;
+import android.os.PowerManager;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -29,7 +30,7 @@ import java.util.Map;
  * Created by yqritc on 2015/06/11.
  */
 public class ScalableVideoView extends TextureView implements MediaPlayerControl{
-	private String TAG = "EnhancedVideoView";
+	private String TAG = "ScalableVideoView";
 	// settable by the client
 	private Uri         mUri;
 	private Map<String, String> mHeaders;
@@ -227,7 +228,9 @@ public class ScalableVideoView extends TextureView implements MediaPlayerControl
 			mMediaPlayer.setDataSource(getContext(), mUri, mHeaders);
 			mMediaPlayer.setSurface(new Surface(mSurfaceTexture));
 			mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-			mMediaPlayer.setScreenOnWhilePlaying(true);
+//			mMediaPlayer.setScreenOnWhilePlaying(true);
+			//keep screen on
+			mMediaPlayer.setWakeMode(getContext(), PowerManager.SCREEN_BRIGHT_WAKE_LOCK);
 			mMediaPlayer.prepareAsync();
 
 			// we don't set the target state here either, but preserve the
